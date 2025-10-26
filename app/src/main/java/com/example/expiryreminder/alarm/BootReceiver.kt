@@ -28,7 +28,7 @@ class BootReceiver : BroadcastReceiver() {
                         val repository = application.appGraph.productRepository
                         val reminderCoordinator = application.appGraph.reminderCoordinator
                         
-                        val products = repository.getAllProducts().first()
+                        val products = repository.getProducts().first()
                         
                         products.forEach { product ->
                             try {
