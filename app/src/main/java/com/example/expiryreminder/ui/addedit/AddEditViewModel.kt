@@ -110,13 +110,13 @@ class AddEditViewModel(
         val state = _uiState.value
 
         if (state.productName.isBlank()) {
-            _uiState.value = state.copy(error = "Product name is required")
+            _uiState.value = state.copy(error = "商品名称不能为空")
             return
         }
 
         val expirationDate = state.expirationDate
         if (expirationDate == null) {
-            _uiState.value = state.copy(error = "Expiration date is required")
+            _uiState.value = state.copy(error = "到期日期不能为空")
             return
         }
 
@@ -138,7 +138,7 @@ class AddEditViewModel(
                         )
                         val result = reminderCoordinator.createOrUpdateReminder(productToSave)
                         if (!result.success) {
-                            error(result.errorMessage ?: "Unable to schedule reminder")
+                            error(result.errorMessage ?: "无法设置提醒")
                         }
                         val finalProduct = productToSave.copy(calendarEventId = result.calendarEventId)
                         productRepository.updateProduct(finalProduct)
@@ -157,7 +157,7 @@ class AddEditViewModel(
                         val productWithId = baseProduct.copy(id = newId)
                         val result = reminderCoordinator.createOrUpdateReminder(productWithId)
                         if (!result.success) {
-                            error(result.errorMessage ?: "Unable to schedule reminder")
+                            error(result.errorMessage ?: "无法设置提醒")
                         }
                         val finalProduct = productWithId.copy(calendarEventId = result.calendarEventId)
                         productRepository.updateProduct(finalProduct)
@@ -171,7 +171,7 @@ class AddEditViewModel(
             }.onFailure { throwable ->
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = throwable.message ?: "Failed to save product"
+                    error = throwable.message ?: "保存商品失败"
                 )
             }
         }

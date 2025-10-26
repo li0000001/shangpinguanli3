@@ -13,8 +13,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.expiryreminder.R
 import com.example.expiryreminder.domain.Product
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -35,12 +37,12 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Expiry Reminder") }
+                title = { Text(stringResource(id = R.string.home_title)) }
             )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddProduct) {
-                Icon(Icons.Default.Add, contentDescription = "Add Product")
+                Icon(Icons.Default.Add, contentDescription = stringResource(id = R.string.add_product))
             }
         }
     ) { paddingValues ->
@@ -51,7 +53,7 @@ fun HomeScreen(
                     .padding(paddingValues),
                 contentAlignment = Alignment.Center
             ) {
-                Text("No products yet. Tap + to add one.")
+                Text(stringResource(id = R.string.empty_list_message))
             }
         } else {
             LazyColumn(
@@ -77,17 +79,17 @@ fun ProductItem(
     onClick: () -> Unit,
     onDelete: () -> Unit
 ) {
-    val dateFormatter = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
-    val expirationDate = Date(product.expirationDate)
+    val dateFormatter = SimpleDateFormat("yyyy年MM月dd日", Locale.CHINA)
+    val expirationDateText = dateFormatter.format(Date(product.expirationDate))
 
     val now = Instant.now().atZone(ZoneId.systemDefault()).toLocalDate()
     val expiryLocalDate = Instant.ofEpochMilli(product.expirationDate).atZone(ZoneId.systemDefault()).toLocalDate()
     val rawDaysLeft = ChronoUnit.DAYS.between(now, expiryLocalDate).toInt()
 
     val statusText = when {
-        rawDaysLeft > 0 -> "Expires in $rawDaysLeft days"
-        rawDaysLeft == 0 -> "Expires today"
-        else -> "Expired ${abs(rawDaysLeft)} days ago"
+        rawDaysLeft > 0 -> stringResource(id = R.string.status_expires_in, rawDaysLeft)
+        rawDaysLeft == 0 -> stringResource(id = R.string.status_expires_today)
+        else -> stringResource(id = R.string.status_expired_days, abs(rawDaysLeft))
     }
 
     Card(
@@ -105,11 +107,11 @@ fun ProductItem(
         ) {
             Column {
                 Text(product.productName, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                Text("Expires on ${dateFormatter.format(expirationDate)}", style = MaterialTheme.typography.bodyMedium)
+                Text(stringResource(id = R.string.expires_on, expirationDateText), style = MaterialTheme.typography.bodyMedium)
                 Text(statusText, style = MaterialTheme.typography.bodyMedium)
             }
             IconButton(onClick = onDelete) {
-                Icon(Icons.Default.Delete, contentDescription = "Delete")
+                Icon(Icons.Default.Delete, contentDescription = stringResource(id = R.string.delete_product))
             }
         }
     }

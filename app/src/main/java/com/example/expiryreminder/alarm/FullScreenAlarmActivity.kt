@@ -21,7 +21,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.expiryreminder.R
 import com.example.expiryreminder.alarm.ReminderReceiver.Companion.EXTRA_DAYS_BEFORE
 import com.example.expiryreminder.alarm.ReminderReceiver.Companion.EXTRA_PRODUCT_NAME
 import com.example.expiryreminder.alarm.ReminderReceiver.Companion.EXTRA_REMINDER_TIME
@@ -55,23 +57,23 @@ class FullScreenAlarmActivity : ComponentActivity() {
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "Reminder",
+                            text = stringResource(R.string.alarm_title),
                             style = MaterialTheme.typography.headlineSmall
                         )
                         Text(
-                            text = "$productName will expire in $daysBefore days",
+                            text = stringResource(R.string.alarm_message, productName, daysBefore),
                             style = MaterialTheme.typography.titleMedium,
                             modifier = Modifier.padding(top = 16.dp)
                         )
                         val formattedDate = remember(expirationDate) {
-                            SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(expirationDate))
+                            SimpleDateFormat("yyyy年MM月dd日", Locale.CHINA).format(Date(expirationDate))
                         }
                         Text(
-                            text = "Expiration Date: $formattedDate",
+                            text = stringResource(R.string.alarm_expiration_date, formattedDate),
                             modifier = Modifier.padding(top = 8.dp)
                         )
                         Text(
-                            text = "Reminder Time: $reminderTime",
+                            text = stringResource(R.string.alarm_reminder_time, reminderTime),
                             modifier = Modifier.padding(top = 4.dp)
                         )
                         Button(
@@ -81,7 +83,7 @@ class FullScreenAlarmActivity : ComponentActivity() {
                             },
                             modifier = Modifier.padding(top = 24.dp)
                         ) {
-                            Text("Dismiss")
+                            Text(stringResource(R.string.dismiss))
                         }
                     }
                 }

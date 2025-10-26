@@ -17,9 +17,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import com.example.expiryreminder.R
 import com.example.expiryreminder.domain.ReminderMethod
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -78,10 +80,10 @@ fun AddEditScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (productId == null) "Add Product" else "Edit Product") },
+                title = { Text(stringResource(if (productId == null) R.string.add_product else R.string.edit_product)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, "Back")
+                        Icon(Icons.Default.ArrowBack, stringResource(R.string.back))
                     }
                 }
             )
@@ -103,12 +105,12 @@ fun AddEditScreen(
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            "Permissions Required",
+                            stringResource(R.string.permissions_required_title),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onErrorContainer
                         )
                         Text(
-                            "Calendar permissions are needed to create reminders.",
+                            stringResource(R.string.permissions_required_message),
                             modifier = Modifier.padding(top = 8.dp),
                             color = MaterialTheme.colorScheme.onErrorContainer
                         )
@@ -116,7 +118,7 @@ fun AddEditScreen(
                             onClick = { permissionsState.launchMultiplePermissionRequest() },
                             modifier = Modifier.padding(top = 8.dp)
                         ) {
-                            Text("Grant Permissions")
+                            Text(stringResource(R.string.grant_permissions))
                         }
                     }
                 }
@@ -131,12 +133,12 @@ fun AddEditScreen(
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            "Exact Alarm Permission Required",
+                            stringResource(R.string.exact_alarm_permission_title),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onTertiaryContainer
                         )
                         Text(
-                            "To ensure alarms ring on time, allow the app to schedule exact alarms in system settings.",
+                            stringResource(R.string.exact_alarm_permission_message),
                             modifier = Modifier.padding(top = 8.dp),
                             color = MaterialTheme.colorScheme.onTertiaryContainer
                         )
@@ -149,7 +151,7 @@ fun AddEditScreen(
                             },
                             modifier = Modifier.padding(top = 8.dp)
                         ) {
-                            Text("Open Settings")
+                            Text(stringResource(R.string.open_settings))
                         }
                     }
                 }
@@ -158,14 +160,14 @@ fun AddEditScreen(
             OutlinedTextField(
                 value = uiState.productName,
                 onValueChange = { viewModel.updateProductName(it) },
-                label = { Text("Product Name") },
+                label = { Text(stringResource(R.string.product_name_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text("Date Input Method", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.date_input_method), style = MaterialTheme.typography.titleMedium)
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -174,12 +176,12 @@ fun AddEditScreen(
                 FilterChip(
                     selected = uiState.dateInputMethod == DateInputMethod.DIRECT,
                     onClick = { viewModel.updateDateInputMethod(DateInputMethod.DIRECT) },
-                    label = { Text("Direct Date") }
+                    label = { Text(stringResource(R.string.direct_date)) }
                 )
                 FilterChip(
                     selected = uiState.dateInputMethod == DateInputMethod.PRODUCTION_DATE,
                     onClick = { viewModel.updateDateInputMethod(DateInputMethod.PRODUCTION_DATE) },
-                    label = { Text("Production Date + Shelf Life") }
+                    label = { Text(stringResource(R.string.production_date_shelf_life)) }
                 )
             }
 
@@ -188,14 +190,14 @@ fun AddEditScreen(
             when (uiState.dateInputMethod) {
                 DateInputMethod.DIRECT -> {
                     DatePickerField(
-                        label = "Expiration Date",
+                        label = stringResource(R.string.expiration_date_label),
                         selectedDate = uiState.expirationDate,
                         onDateSelected = { viewModel.updateExpirationDate(it) }
                     )
                 }
                 DateInputMethod.PRODUCTION_DATE -> {
                     DatePickerField(
-                        label = "Production Date",
+                        label = stringResource(R.string.production_date_label),
                         selectedDate = uiState.productionDate,
                         onDateSelected = { viewModel.updateProductionDate(it) }
                     )
@@ -205,7 +207,7 @@ fun AddEditScreen(
                     OutlinedTextField(
                         value = uiState.shelfLifeDays,
                         onValueChange = { viewModel.updateShelfLifeDays(it) },
-                        label = { Text("Shelf Life (days)") },
+                        label = { Text(stringResource(R.string.shelf_life_label)) },
                         modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true
@@ -213,9 +215,12 @@ fun AddEditScreen(
 
                     if (uiState.expirationDate != null) {
                         Spacer(modifier = Modifier.height(8.dp))
-                        val dateFormatter = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+                        val dateFormatter = SimpleDateFormat("yyyy年MM月dd日", Locale.CHINA)
                         Text(
-                            "Calculated Expiration: ${dateFormatter.format(Date(uiState.expirationDate!!))}",
+                            stringResource(
+                                R.string.calculated_expiration,
+                                dateFormatter.format(Date(uiState.expirationDate!!))
+                            ),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.primary
                         )
@@ -225,7 +230,7 @@ fun AddEditScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Text("Reminder Settings", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.reminder_settings), style = MaterialTheme.typography.titleMedium)
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -234,7 +239,7 @@ fun AddEditScreen(
                 onValueChange = { value ->
                     value.toIntOrNull()?.let { viewModel.updateDaysToRemindBefore(it) }
                 },
-                label = { Text("Days Before Expiration") },
+                label = { Text(stringResource(R.string.days_before_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 singleLine = true
@@ -243,14 +248,14 @@ fun AddEditScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             TimePickerField(
-                label = "Reminder Time",
+                label = stringResource(R.string.reminder_time_label),
                 selectedTime = uiState.reminderTime,
                 onTimeSelected = { viewModel.updateReminderTime(it) }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text("Reminder Method", style = MaterialTheme.typography.bodyLarge)
+            Text(stringResource(R.string.reminder_method_label), style = MaterialTheme.typography.bodyLarge)
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -259,12 +264,12 @@ fun AddEditScreen(
                 FilterChip(
                     selected = uiState.reminderMethod == ReminderMethod.NOTIFICATION,
                     onClick = { viewModel.updateReminderMethod(ReminderMethod.NOTIFICATION) },
-                    label = { Text("Notification") }
+                    label = { Text(stringResource(R.string.reminder_method_notification)) }
                 )
                 FilterChip(
                     selected = uiState.reminderMethod == ReminderMethod.ALARM,
                     onClick = { viewModel.updateReminderMethod(ReminderMethod.ALARM) },
-                    label = { Text("Alarm") }
+                    label = { Text(stringResource(R.string.reminder_method_alarm)) }
                 )
             }
 
@@ -286,7 +291,7 @@ fun AddEditScreen(
                 if (uiState.isLoading) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp))
                 } else {
-                    Text("Save Product")
+                    Text(stringResource(R.string.save_product))
                 }
             }
         }
@@ -301,15 +306,15 @@ fun DatePickerField(
     onDateSelected: (Long) -> Unit
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
-    val dateFormatter = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+    val dateFormatter = SimpleDateFormat("yyyy年MM月dd日", Locale.CHINA)
 
     OutlinedButton(
         onClick = { showDatePicker = true },
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text(
-            selectedDate?.let { dateFormatter.format(Date(it)) } ?: "Select $label"
-        )
+        val displayText = selectedDate?.let { dateFormatter.format(Date(it)) }
+            ?: stringResource(R.string.select_label, label)
+        Text(displayText)
     }
 
     if (showDatePicker) {
@@ -324,12 +329,12 @@ fun DatePickerField(
                     datePickerState.selectedDateMillis?.let(onDateSelected)
                     showDatePicker = false
                 }) {
-                    Text("OK")
+                    Text(stringResource(R.string.ok))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         ) {
@@ -351,7 +356,7 @@ fun TimePickerField(
         onClick = { showTimePicker = true },
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text("$label: $selectedTime")
+        Text(stringResource(R.string.reminder_time_with_value, label, selectedTime))
     }
 
     if (showTimePicker) {
@@ -373,12 +378,12 @@ fun TimePickerField(
                     onTimeSelected(formattedTime)
                     showTimePicker = false
                 }) {
-                    Text("OK")
+                    Text(stringResource(R.string.ok))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showTimePicker = false }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             },
             text = {

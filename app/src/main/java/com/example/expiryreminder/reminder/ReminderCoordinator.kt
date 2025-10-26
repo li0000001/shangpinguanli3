@@ -24,8 +24,8 @@ class ReminderCoordinator(
 
     fun createOrUpdateReminder(product: Product): ReminderResult {
         val reminderDateTime = calculateReminderDateTime(product)
-        val title = "${product.productName} will expire in ${product.daysToRemindBefore} days"
-        val description = "Expiration reminder for ${product.productName}"
+        val title = "${product.productName} 将在 ${product.daysToRemindBefore} 天后过期"
+        val description = "${product.productName}的过期提醒"
 
         val startMillis = reminderDateTime.toInstant().toEpochMilli()
         val endMillis = startMillis + (60 * 60 * 1000)
@@ -47,7 +47,7 @@ class ReminderCoordinator(
                 success = false,
                 calendarEventId = product.calendarEventId,
                 usedFallbackAlarm = false,
-                errorMessage = "Failed to upsert calendar event"
+                errorMessage = "无法创建或更新日历事件"
             )
         }
 
@@ -65,7 +65,7 @@ class ReminderCoordinator(
                 } catch (e: Exception) {
                     Log.e("ReminderCoordinator", "Error scheduling fallback alarm", e)
                     fallbackSuccess = false
-                    fallbackError = e.message ?: "Failed to schedule fallback alarm"
+                    fallbackError = e.message ?: "无法设置后备闹钟"
                 }
             }
         }
