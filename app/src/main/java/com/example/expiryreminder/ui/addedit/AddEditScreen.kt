@@ -37,10 +37,13 @@ fun AddEditScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    val permissionsList = listOf(
-        Manifest.permission.READ_CALENDAR,
-        Manifest.permission.WRITE_CALENDAR
-    )
+    val permissionsList = buildList {
+        add(Manifest.permission.READ_CALENDAR)
+        add(Manifest.permission.WRITE_CALENDAR)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            add(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
 
     val permissionsState = rememberMultiplePermissionsState(permissions = permissionsList)
     val context = LocalContext.current

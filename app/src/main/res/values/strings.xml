@@ -44,4 +44,8 @@
     <string name="error_product_name_required">商品名称不能为空</string>
     <string name="error_expiration_date_required">到期日期不能为空</string>
     <string name="error_save_product">保存商品失败</string>
+    <string name="notification_channel_name">过期提醒</string>
+    <string name="notification_channel_description">商品过期提醒通知</string>
+    <string name="notification_title">商品过期提醒</string>
+    <string name="notification_message">%1$s 将在 %2$d 天后过期</string>
 </resources>
