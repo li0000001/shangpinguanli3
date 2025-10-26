@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">保质期提醒</string>
+    <string name="home_title">保质期提醒</string>
+    <string name="add_product">添加商品</string>
+    <string name="edit_product">编辑商品</string>
+    <string name="empty_list_message">暂无商品，请点击“+”添加。</string>
+    <string name="delete_product">删除商品</string>
+    <string name="permissions_required_title">需要权限</string>
+    <string name="permissions_required_message">请允许访问日历以创建提醒。</string>
+    <string name="grant_permissions">授权</string>
+    <string name="exact_alarm_permission_title">需要精确闹钟权限</string>
+    <string name="exact_alarm_permission_message">为确保闹钟准时响铃，请在系统设置中允许应用安排精确闹钟。</string>
+    <string name="open_settings">打开设置</string>
+    <string name="product_name_label">商品名称</string>
+    <string name="date_input_method">日期输入方式</string>
+    <string name="direct_date">直接选择日期</string>
+    <string name="production_date_shelf_life">生产日期 + 保质期</string>
+    <string name="expiration_date_label">到期日期</string>
+    <string name="production_date_label">生产日期</string>
+    <string name="shelf_life_label">保质期（天）</string>
+    <string name="calculated_expiration">计算的到期日：%1$s</string>
+    <string name="reminder_settings">提醒设置</string>
+    <string name="days_before_label">提前提醒天数</string>
+    <string name="reminder_time_label">提醒时间</string>
+    <string name="reminder_time_with_value">%1$s：%2$s</string>
+    <string name="reminder_method_label">提醒方式</string>
+    <string name="reminder_method_notification">通知</string>
+    <string name="reminder_method_alarm">闹钟</string>
+    <string name="save_product">保存商品</string>
+    <string name="back">返回</string>
+    <string name="select_label">选择%1$s</string>
+    <string name="ok">确定</string>
+    <string name="cancel">取消</string>
+    <string name="alarm_title">提醒</string>
+    <string name="alarm_message">%1$s 将在 %2$d 天后过期</string>
+    <string name="alarm_expiration_date">到期日期：%1$s</string>
+    <string name="alarm_reminder_time">提醒时间：%1$s</string>
+    <string name="dismiss">关闭</string>
+    <string name="status_expires_in">%1$d天后到期</string>
+    <string name="status_expires_today">今天到期</string>
+    <string name="status_expired_days">已过期%1$d天</string>
+    <string name="expires_on">到期日期：%1$s</string>
+    <string name="error_product_name_required">商品名称不能为空</string>
+    <string name="error_expiration_date_required">到期日期不能为空</string>
+    <string name="error_save_product">保存商品失败</string>
+</resources>
