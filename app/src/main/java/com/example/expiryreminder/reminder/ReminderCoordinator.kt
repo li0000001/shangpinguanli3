@@ -18,7 +18,7 @@ class ReminderCoordinator(
     data class ReminderResult(
         val success: Boolean,
         val calendarEventId: Long?,
-        val usedFallbackAlarm: Boolean,
+        val scheduledAppReminder: Boolean,
         val errorMessage: String? = null
     )
 
@@ -32,13 +32,19 @@ class ReminderCoordinator(
 
         val useAlarm = product.reminderMethod == ReminderMethod.ALARM
 
+        val reminderMinutes = if (product.reminderMethod == ReminderMethod.NOTIFICATION) {
+            -1
+        } else {
+            0
+        }
+
         val result = calendarEventManager.upsertEvent(
             eventId = product.calendarEventId,
             title = title,
             description = description,
             startMillis = startMillis,
             endMillis = endMillis,
-            reminderMinutesBefore = 0,
+            reminderMinutesBefore = reminderMinutes,
             useAlarmMethod = useAlarm
         )
 
@@ -46,39 +52,31 @@ class ReminderCoordinator(
             return ReminderResult(
                 success = false,
                 calendarEventId = product.calendarEventId,
-                usedFallbackAlarm = false,
+                scheduledAppReminder = false,
                 errorMessage = "无法创建或更新日历事件"
             )
         }
 
-        reminderScheduler.cancelAlarm(product)
+        reminderScheduler.cancelReminder(product)
 
-        var usedFallback = false
-        var fallbackSuccess = true
-        var fallbackError: String? = null
+        var usedAppReminder = false
+        var reminderSuccess = true
+        var reminderError: String? = null
 
-        if (useAlarm) {
-            if (!result.usedAlarmMethod) {
-                usedFallback = true
-                try {
-                    reminderScheduler.scheduleAlarm(product, reminderDateTime)
-                } catch (e: Exception) {
-                    Log.e("ReminderCoordinator", "Error scheduling fallback alarm", e)
-                    fallbackSuccess = false
-                    fallbackError = e.message ?: "无法设置后备闹钟"
-                }
-            }
-        }
-
-        if (!useAlarm) {
-            reminderScheduler.cancelAlarm(product)
+        try {
+            reminderScheduler.scheduleReminder(product, reminderDateTime)
+            usedAppReminder = true
+        } catch (e: Exception) {
+            Log.e("ReminderCoordinator", "Error scheduling app-level reminder", e)
+            reminderSuccess = false
+            reminderError = e.message ?: "无法设置提醒"
         }
 
         return ReminderResult(
-            success = fallbackSuccess,
+            success = reminderSuccess,
             calendarEventId = result.eventId,
-            usedFallbackAlarm = usedFallback,
-            errorMessage = fallbackError
+            scheduledAppReminder = usedAppReminder,
+            errorMessage = reminderError
         )
     }
 
@@ -86,7 +84,7 @@ class ReminderCoordinator(
         product.calendarEventId?.let { eventId ->
             calendarEventManager.deleteEvent(eventId)
         }
-        reminderScheduler.cancelAlarm(product)
+        reminderScheduler.cancelReminder(product)
     }
 
     private fun calculateReminderDateTime(product: Product): ZonedDateTime {

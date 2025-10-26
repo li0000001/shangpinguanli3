@@ -55,19 +55,16 @@ class CalendarEventManager(private val context: Context) {
             var alarmMethodWorked = false
 
             if (reminderMinutesBefore >= 0) {
-                alarmMethodWorked = if (useAlarmMethod) {
-                    addReminder(
-                        eventId = finalEventId,
-                        minutesBefore = reminderMinutesBefore,
-                        method = CalendarContract.Reminders.METHOD_ALARM
-                    )
+                val reminderMethod = if (useAlarmMethod) {
+                    CalendarContract.Reminders.METHOD_ALERT
                 } else {
-                    addReminder(
-                        eventId = finalEventId,
-                        minutesBefore = reminderMinutesBefore,
-                        method = CalendarContract.Reminders.METHOD_ALERT
-                    )
+                    CalendarContract.Reminders.METHOD_ALERT
                 }
+                alarmMethodWorked = addReminder(
+                    eventId = finalEventId,
+                    minutesBefore = reminderMinutesBefore,
+                    method = reminderMethod
+                )
             }
 
             EventUpsertResult(

@@ -6,7 +6,8 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.content.ContextCompat
 import com.example.expiryreminder.domain.Product
-import java.time.Instant
+import com.example.expiryreminder.domain.ReminderMethod
+import com.example.expiryreminder.notification.NotificationReceiver
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
@@ -14,14 +15,17 @@ class ReminderScheduler(private val context: Context) {
 
     private val alarmManager: AlarmManager? = ContextCompat.getSystemService(context, AlarmManager::class.java)
 
-    fun scheduleAlarm(product: Product, triggerTime: ZonedDateTime) {
+    fun scheduleReminder(product: Product, triggerTime: ZonedDateTime) {
         val alarmManager = this.alarmManager ?: return
-
-        val pendingIntent = createPendingIntent(product)
 
         val triggerAtMillis = triggerTime.withZoneSameInstant(ZoneId.systemDefault()).toInstant().toEpochMilli()
         if (triggerAtMillis <= System.currentTimeMillis()) {
             return
+        }
+
+        val pendingIntent = when (product.reminderMethod) {
+            ReminderMethod.ALARM -> createAlarmPendingIntent(product)
+            ReminderMethod.NOTIFICATION -> createNotificationPendingIntent(product)
         }
 
         alarmManager.setExactAndAllowWhileIdle(
@@ -31,13 +35,13 @@ class ReminderScheduler(private val context: Context) {
         )
     }
 
-    fun cancelAlarm(product: Product) {
+    fun cancelReminder(product: Product) {
         val alarmManager = this.alarmManager ?: return
-        val pendingIntent = createPendingIntent(product)
-        alarmManager.cancel(pendingIntent)
+        alarmManager.cancel(createAlarmPendingIntent(product))
+        alarmManager.cancel(createNotificationPendingIntent(product))
     }
 
-    private fun createPendingIntent(product: Product): PendingIntent {
+    private fun createAlarmPendingIntent(product: Product): PendingIntent {
         val intent = Intent(context, ReminderReceiver::class.java).apply {
             action = ReminderReceiver.ACTION_TRIGGER_ALARM
             putExtra(ReminderReceiver.EXTRA_PRODUCT_ID, product.id)
@@ -52,6 +56,24 @@ class ReminderScheduler(private val context: Context) {
         return PendingIntent.getBroadcast(
             context,
             product.id.toInt(),
+            intent,
+            flags
+        )
+    }
+
+    private fun createNotificationPendingIntent(product: Product): PendingIntent {
+        val intent = Intent(context, NotificationReceiver::class.java).apply {
+            action = NotificationReceiver.ACTION_SHOW_NOTIFICATION
+            putExtra(NotificationReceiver.EXTRA_PRODUCT_ID, product.id)
+            putExtra(NotificationReceiver.EXTRA_PRODUCT_NAME, product.productName)
+            putExtra(NotificationReceiver.EXTRA_DAYS_BEFORE, product.daysToRemindBefore)
+        }
+
+        val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+
+        return PendingIntent.getBroadcast(
+            context,
+            (product.id * 2).toInt(),
             intent,
             flags
         )
