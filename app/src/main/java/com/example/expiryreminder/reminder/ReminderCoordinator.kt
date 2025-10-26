@@ -32,11 +32,7 @@ class ReminderCoordinator(
 
         val useAlarm = product.reminderMethod == ReminderMethod.ALARM
 
-        val reminderMinutes = if (product.reminderMethod == ReminderMethod.NOTIFICATION) {
-            -1
-        } else {
-            0
-        }
+        val reminderMinutes = 0
 
         val result = calendarEventManager.upsertEvent(
             eventId = product.calendarEventId,

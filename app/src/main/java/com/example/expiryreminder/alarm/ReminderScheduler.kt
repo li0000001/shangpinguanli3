@@ -4,6 +4,8 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
+import android.util.Log
 import androidx.core.content.ContextCompat
 import com.example.expiryreminder.domain.Product
 import com.example.expiryreminder.domain.ReminderMethod
@@ -20,7 +22,15 @@ class ReminderScheduler(private val context: Context) {
 
         val triggerAtMillis = triggerTime.withZoneSameInstant(ZoneId.systemDefault()).toInstant().toEpochMilli()
         if (triggerAtMillis <= System.currentTimeMillis()) {
+            Log.w("ReminderScheduler", "Trigger time is in the past, not scheduling alarm")
             return
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (!alarmManager.canScheduleExactAlarms()) {
+                Log.e("ReminderScheduler", "Cannot schedule exact alarms - permission not granted")
+                return
+            }
         }
 
         val pendingIntent = when (product.reminderMethod) {
@@ -28,11 +38,16 @@ class ReminderScheduler(private val context: Context) {
             ReminderMethod.NOTIFICATION -> createNotificationPendingIntent(product)
         }
 
-        alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            triggerAtMillis,
-            pendingIntent
-        )
+        try {
+            alarmManager.setExactAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                triggerAtMillis,
+                pendingIntent
+            )
+            Log.d("ReminderScheduler", "Scheduled reminder for ${product.productName} at $triggerTime")
+        } catch (e: SecurityException) {
+            Log.e("ReminderScheduler", "SecurityException when scheduling alarm", e)
+        }
     }
 
     fun cancelReminder(product: Product) {
